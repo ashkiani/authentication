@@ -19,12 +19,23 @@ app.get("/", function (req, res) {
     res.sendFile(path.join(__dirname, "./public/login.html"));
 });
 
+app.get("/register", function (req, res) {
+    res.sendFile(path.join(__dirname, "./public/register.html"));
+});
+
+
 // Post route -> back to home
 app.post("/login", function (req, res) {
     //req.body...
     console.log(req.body);
     res.send("response");
     //res.redirect("/");
+});
+
+app.post("/register", function (req, res) {
+    console.log(req.body);
+    // res.redirect("/");
+    res.send(true);
 });
 
 // Start our server so that it can begin listening to client requests.
