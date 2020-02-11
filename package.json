@@ -1,0 +1,23 @@
+{
+  "name": "authentication",
+  "version": "1.0.0",
+  "description": "Basic login authentication + registration",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ashkiani/authentication.git"
+  },
+  "author": "Siavash Ashkiani",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ashkiani/authentication/issues"
+  },
+  "homepage": "https://github.com/ashkiani/authentication#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mysql": "^2.18.1"
+  }
+}
