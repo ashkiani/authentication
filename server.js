@@ -1,45 +1,60 @@
-var express = require("express");
-const Database = require("./lib/database");
-const db = new Database("users_db");
-var path = require("path");
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config()
+}
 
-var app = express();
+const express = require('express');
+var exphbs = require("express-handlebars");
+const app = express();
+const passport = require('passport');
+const flash = require('express-flash');
+const session = require('express-session');
+const methodOverride = require('method-override');
 
-// Set the port of our application
-// process.env.PORT lets the port be set by Heroku
-var PORT = process.env.PORT || 8080;
+const initializePassport = require('./passport-config');
+initializePassport(
+  passport,
+  email => users.find(user => user.email === email),
+  id => users.find(user => user.id === id)
+);
 
-// Sets up the Express app to handle data parsing
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+const users = []
+
+var PORT = process.env.PORT || 3000;
+
+
+app.use(flash())
+app.use(session({
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false
+}))
+app.use(passport.initialize())
+app.use(passport.session())
+app.use(methodOverride('_method'))
+app.use(express.urlencoded({ extended: false }))
+// Middleware
+// app.use(express.json());
 app.use(express.static("public"));
 
-// Root get route
-app.get("/", function (req, res) {
-    res.sendFile(path.join(__dirname, "./public/login.html"));
+// Handlebars
+app.engine(
+  "handlebars",
+  exphbs({
+    defaultLayout: "main"
+  })
+);
+app.set("view engine", "handlebars");
+
+// Routes
+require("./routes/apiRoutes")(app);
+require("./routes/htmlRoutes")(app);
+
+app.listen(PORT, function() {
+  console.log(
+    "==> 🌎  Listening on port %s. Visit http://localhost:%s/ in your browser.",
+    PORT,
+    PORT
+  );
 });
 
-app.get("/register", function (req, res) {
-    res.sendFile(path.join(__dirname, "./public/register.html"));
-});
-
-
-// Post route -> back to home
-app.post("/login", function (req, res) {
-    //req.body...
-    console.log(req.body);
-    res.send("response");
-    //res.redirect("/");
-});
-
-app.post("/register", function (req, res) {
-    console.log(req.body);
-    // res.redirect("/");
-    res.send(true);
-});
-
-// Start our server so that it can begin listening to client requests.
-app.listen(PORT, function () {
-    // Log (server-side) when our server has started
-    console.log("Server listening on: http://localhost:" + PORT);
-});
+module.exports = app;
