@@ -8,6 +8,12 @@
     <label for="password">Password</label>
     <input type="password" id="password" name="password" required>
   </div>
+  {{#if messages.error}}
+  Login Failed <br>
+  {{else}}
+
+  {{/if}}
+
   <button type="submit">Login</button>
 </form>
 <a href="/register">Register</a>
