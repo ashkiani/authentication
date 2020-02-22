@@ -1,10 +1,10 @@
-//var db = require("../models");
+var db = require("../models");
 const passport = require('passport');
 const bcrypt = require('bcrypt');
 module.exports = function (app) {
-  app.get('/', checkAuthenticated, (req, res) => {
-    console.log("root");
-    res.render('index', { name: req.user.name })
+  app.get('/', checkAuthenticated, async (req, res) => {
+    let user = await req.user
+    res.render('index', { name: user.name })
   })
 
   app.get('/login', checkNotAuthenticated, (req, res) => {
@@ -23,21 +23,12 @@ module.exports = function (app) {
 
   app.post('/register', checkNotAuthenticated, async (req, res) => {
     try {
-      console.log("Register - POST");
-      // const hashedPassword = await bcrypt.hash(req.body.password, 10)
-      // console.log(req.body.name);
-      // console.log(req.body.email);
-      // console.log("Before hashed");
-      // console.log(hashedPassword);
-      // console.log("After hashed");
-      // users.push({
-      //   id: Date.now().toString(),
-      //   name: req.body.name,
-      //   email: req.body.email,
-      //   password: hashedPassword
-      // })
+      // console.log("Register - POST");
+      const hashedPassword = await bcrypt.hash(req.body.password, 10)
+      // Create a new user
+      const newUser = await db.User.create({ username: req.body.email, name: req.body.name, password: hashedPassword });
       res.redirect('/login')
-    } catch(err) {
+    } catch (err) {
       console.log(err);
       res.redirect('/register')
     }
@@ -54,9 +45,6 @@ module.exports = function (app) {
     }
     res.redirect('/login');
   }
-  //   res.redirect('/login')
-  // }
-
   function checkNotAuthenticated(req, res, next) {
     if (req.isAuthenticated()) {
       return res.redirect('/')

@@ -19,10 +19,15 @@ initializePassport(
     console.log(v1);
     return v1;
   },
-  id => users.find(user => user.id === id)
+  async function (id) {
+    console.log("Finding user by id.");
+    let v1 = await db.User.findOne({ where: { id: id } });
+    console.log(v1);
+    return v1;
+  }
 );
 //email => users.find(user => user.email === email)
-const users = []
+//const users = []
 
 var PORT = process.env.PORT || 3000;
 
@@ -55,17 +60,18 @@ require("./routes/apiRoutes")(app);
 require("./routes/htmlRoutes")(app);
 
 
-var syncOptions = { force: false };
+// var syncOptions = { force: false };
 
-// If running a test, set syncOptions.force to true
-// clearing the `testdb`
-if (process.env.NODE_ENV === "test") {
-  syncOptions.force = true;
-}
+// // If running a test, set syncOptions.force to true
+// // clearing the `testdb`
+// if (process.env.NODE_ENV === "test") {
+//   syncOptions.force = true;
+// }
 
 // Starting the server, syncing our models ------------------------------------/
-db.sequelize.sync(syncOptions).then(function() {
-  app.listen(PORT, function() {
+//db.sequelize.sync(syncOptions).then(function() {
+db.sequelize.sync().then(function () {
+  app.listen(PORT, function () {
     console.log(
       "==> 🌎  Listening on port %s. Visit http://localhost:%s/ in your browser.",
       PORT,
