@@ -34,10 +34,10 @@ module.exports = function (app) {
     }
   })
 
-  // app.delete('/logout', (req, res) => {
-  //   req.logOut()
-  //   res.redirect('/login')
-  // })
+  app.delete('/logout', (req, res) => {
+    req.logOut()
+    res.redirect('/login')
+  })
 
   function checkAuthenticated(req, res, next) {
     if (req.isAuthenticated()) {
