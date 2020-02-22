@@ -8,8 +8,11 @@
     <label for="password">Password</label>
     <input type="password" id="password" name="password" required>
   </div>
+
   {{#if messages.error}}
-  Login Failed <br>
+  <div class="text-danger">
+    Invalid Username or Password!
+  </div>
   {{else}}
 
   {{/if}}
