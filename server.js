@@ -1,7 +1,7 @@
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config()
 }
-
+var db = require("./models");
 const express = require('express');
 var exphbs = require("express-handlebars");
 const app = express();
@@ -13,10 +13,15 @@ const methodOverride = require('method-override');
 const initializePassport = require('./passport-config');
 initializePassport(
   passport,
-  email => users.find(user => user.email === email),
+  async function (email) {
+    console.log("Finding user by email.");
+    let v1 = await db.User.findOne({ where: { username: email } });
+    console.log(v1);
+    return v1;
+  },
   id => users.find(user => user.id === id)
 );
-
+//email => users.find(user => user.email === email)
 const users = []
 
 var PORT = process.env.PORT || 3000;
@@ -49,12 +54,35 @@ app.set("view engine", "handlebars");
 require("./routes/apiRoutes")(app);
 require("./routes/htmlRoutes")(app);
 
-app.listen(PORT, function() {
-  console.log(
-    "==> 🌎  Listening on port %s. Visit http://localhost:%s/ in your browser.",
-    PORT,
-    PORT
-  );
+
+var syncOptions = { force: false };
+
+// If running a test, set syncOptions.force to true
+// clearing the `testdb`
+if (process.env.NODE_ENV === "test") {
+  syncOptions.force = true;
+}
+
+// Starting the server, syncing our models ------------------------------------/
+db.sequelize.sync(syncOptions).then(function() {
+  app.listen(PORT, function() {
+    console.log(
+      "==> 🌎  Listening on port %s. Visit http://localhost:%s/ in your browser.",
+      PORT,
+      PORT
+    );
+  });
 });
+
+
+
+
+// app.listen(PORT, function () {
+//   console.log(
+//     "==> 🌎  Listening on port %s. Visit http://localhost:%s/ in your browser.",
+//     PORT,
+//     PORT
+//   );
+// });
 
 module.exports = app;
